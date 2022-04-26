@@ -3,30 +3,31 @@ package org.sjhstudio.weathertestapp.util
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import org.sjhstudio.weathertestapp.R
-import org.sjhstudio.weathertestapp.model.Item
-import org.sjhstudio.weathertestapp.model.LocalWeather
-import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 object Utils {
 
     @SuppressLint("SimpleDateFormat")
+    val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일 a h시 mm분")
+    @SuppressLint("SimpleDateFormat")
     val baseDateFormat = SimpleDateFormat("yyyyMMdd")
     @SuppressLint("SimpleDateFormat")
-    val baseTimeFormat = SimpleDateFormat("HH00")
+    val fcstTimeFormat = SimpleDateFormat("HH00")
     @SuppressLint("SimpleDateFormat")
-    val fcstTimeFormat = SimpleDateFormat("HHmm")
+    val beforeTimeFormat = SimpleDateFormat("HHmm")
     @SuppressLint("SimpleDateFormat")
-    val timeFormat = SimpleDateFormat("a hh시")
+    val afterTimeFormat = SimpleDateFormat("a h시")
+
+    private val cal = Calendar.getInstance()
 
     fun getDataFormatString(
         value: String,
@@ -35,6 +36,13 @@ object Utils {
     ): String? {
         val date = inputFormat.parse(value)
         return date?.let { outputFormat.format(it) }
+    }
+
+    fun getYesterday(): Date {
+        cal.time = Date()
+        cal.add(Calendar.DATE, -1)
+
+        return cal.time
     }
 
     /**
@@ -52,168 +60,11 @@ object Utils {
         }
     }
 
-    fun calculateBaseDate(): String {
-        val cal = Calendar.getInstance()
-        cal.time = Date()
-
-        val hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
-        if(hour in 0..1) {
-            cal.set(Calendar.DATE, -1)
-        } else if(hour==2 && minute<=10) {
-                cal.set(Calendar.DATE, -1)
-        }
-
-        return baseDateFormat.format(cal.time)
-    }
-
-    fun calculateBaseTime2(): String {
-        // 추후 수식으로 재정리필요 -> y=3x-1
-        val cal = Calendar.getInstance()
-        cal.time = Date()
-
-        val hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
-        val y = (hour+1)/3
-        val x = y*3-1
-        val result = String.format("%04d", x*100)
-
-        return result
-    }
-
-    fun calculateBaseTime(): String {
-        // Base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
-        // API 제공 시간(~이후) : 02:10, 05:10, 08:10, 11:10, 14:10, 17:10, 20:10, 23:10
-        // 추후 수식으로 재정리필요 -> y=3x-1
-        val cal = Calendar.getInstance()
-        cal.time = Date()
-
-        val hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
-
-        when (hour) {
-            in 2..4 -> {
-                if(hour==2 && minute<=10) {
-                    return "2300"
-                }
-                return "0200"
-            }
-
-            in 5..7 -> {
-                if(hour==5 && minute<=10) {
-                    return "0200"
-                }
-                return "0500"
-            }
-
-            in 8..10 -> {
-                if(hour==8 && minute<=10) {
-                    return "0500"
-                }
-                return "8200"
-            }
-
-            in 11..13 -> {
-                if(hour==11 && minute<=10) {
-                    return "0800"
-                }
-                return "1100"
-            }
-
-            in 14..16 -> {
-                if(hour==14 && minute<=10) {
-                    return "1100"
-                }
-                return "1400"
-            }
-
-            in 17..19 -> {
-                if(hour==17 && minute<=10) {
-                    return "1400"
-                }
-                return "1700"
-            }
-
-            in 20..22 -> {
-                if(hour==20 && minute<=10) {
-                    return "1700"
-                }
-                return "2000"
-            }
-
-            else -> {
-                // 23~1
-                if(hour==23 && minute<=10) {
-                    return "2000"
-                }
-                return "2300"
-            }
-        }
-
-    }
-
-    fun getWeathers(items: List<Item>): ArrayList<LocalWeather> {
-        val result = arrayListOf<LocalWeather>()
-        var fcstTime = items[0].fcstTime
-        var localWeather = LocalWeather()
-        var sky = ""
-        var pty = ""
-
-        items.forEach {
-            if(fcstTime.toInt() == it.fcstTime.toInt()) {
-                when(it.category) {
-                    "SKY" -> {  // 하늘상태
-                        if(it.fcstValue == "1") sky = "맑음"
-                        else if(it.fcstValue == "3") sky = "구름많음"
-                        else if(it.fcstValue == "4") sky = "흐림"
-                        else Log.d(DEBUG, "calculateWeather() : 날씨파싱 에러")
-                    }
-
-                    "PTY" -> {  // 강수형태
-                        if(it.fcstValue == "1") pty = "비"
-                        else if(it.fcstValue == "2") pty = "비/눈"
-                        else if(it.fcstValue == "3") pty = "눈"
-                        else if(it.fcstValue == "4") pty = "소나기"
-                        else Log.d(DEBUG, "calculateWeather() : 날씨파싱 에러")
-                    }
-
-                    "POP" -> {  // 강수확률
-                        if(it.fcstValue != "0") localWeather.chanceOfShower = it.fcstValue
-                    }
-
-                    "TMP" -> {  // 기온
-                        localWeather.temp = it.fcstValue
-                    }
-                }
-            } else {
-                localWeather.apply {
-                    time = getDataFormatString(
-                        fcstTime,
-                        fcstTimeFormat,
-                        timeFormat
-                    )
-                    weather = pty.ifEmpty { sky }
-                }
-                result.add(localWeather)
-
-                sky = ""
-                pty = ""
-                localWeather = LocalWeather()
-                fcstTime = it.fcstTime
-            }
-        }
-
-        localWeather.apply {
-            time = getDataFormatString(
-                fcstTime.toString(),
-                fcstTimeFormat,
-                timeFormat
-            )
-            weather = pty.ifEmpty { sky }
-        }
-        result.add(localWeather)
-
-        return result
+    /**
+     * 상단 상태바 색상설정
+     */
+    fun setStatusBarColor(activity: Activity, color: Int) {
+        activity.window?.statusBarColor = ContextCompat.getColor(activity, color)
     }
 
 }

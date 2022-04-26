@@ -22,8 +22,8 @@ object NetworkModule {
             .build()
     }
 
-    fun getWeatherApi(retrofit: Retrofit): WeatherApi {
-        return retrofit.create(WeatherApi::class.java)
+    fun getWeatherApi(url: String): WeatherApi {
+        return getRetrofit(url).create(WeatherApi::class.java)
     }
 
 }

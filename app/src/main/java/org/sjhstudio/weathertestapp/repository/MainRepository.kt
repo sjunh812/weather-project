@@ -34,8 +34,8 @@ class MainRepository(private val application: Application) {
         baseData: String, baseTime: String,
         nx: Int, ny: Int
     ): Call<Weather> {
-        val retrofit = NetworkModule.getRetrofit(APIS_DATA_URL)
-        return NetworkModule.getWeatherApi(retrofit).getWeather(numOfRows, pageNo, baseData, baseTime, nx, ny)
+        return NetworkModule.getWeatherApi(APIS_DATA_URL)
+            .getWeather(numOfRows, pageNo, baseData, baseTime, nx, ny)
     }
 
 }

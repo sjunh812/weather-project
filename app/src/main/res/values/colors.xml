@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="sunny">#00AAFF</color>
+    <color name="cloudy">#0055FF</color>
+    <color name="overcast">#3333CC</color>
+    <color name="rainy">#8080FF</color>
+    <color name="shower">#6680CC</color>
+    <color name="rain_snow">#0077CC</color>
+    <color name="snow">#0095FF</color>
+
 </resources>
