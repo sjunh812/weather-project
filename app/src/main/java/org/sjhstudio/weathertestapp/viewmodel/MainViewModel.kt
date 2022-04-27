@@ -3,21 +3,20 @@ package org.sjhstudio.weathertestapp.viewmodel
 import android.app.Application
 import android.location.Address
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers.IO
+import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.repository.MainRepository
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import retrofit2.await
+import javax.inject.Inject
 
-class MainViewModel(application: Application): AndroidViewModel(application) {
-
-    private val mainRepository = MainRepository(application)
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    application: Application,
+    private val mainRepository: MainRepository
+): AndroidViewModel(application) {
 
     private var _address = MutableLiveData<Address>()
     val address: LiveData<Address>

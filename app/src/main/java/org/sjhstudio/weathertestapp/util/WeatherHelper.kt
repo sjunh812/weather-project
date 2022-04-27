@@ -15,7 +15,7 @@ object WeatherHelper {
     fun calculateBaseTime(): String {
         // Base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
         // API 제공 시간(~이후) : 02:10, 05:10, 08:10, 11:10, 14:10, 17:10, 20:10, 23:10
-        // 수식 -> y = 3x - 1
+        // 수식 : y = 3x - 1
         val cal = Calendar.getInstance()
         cal.time = Date()
 
@@ -29,7 +29,6 @@ object WeatherHelper {
 
         return if((hour + 1) % 3 == 0 && minute <= 10) {
             y -= 3
-
             if(y < 0) "2300"
             else String.format("%04d", y * 100)
         } else {
@@ -37,72 +36,83 @@ object WeatherHelper {
         }
     }
 
+    /**
+     * MainWeatherData 가공
+     */
     fun getMainWeatherData(items: List<Item>): MainWeatherData {
         val mainWeatherData = MainWeatherData()
         val localWeathers = arrayListOf<LocalWeather>()
         var localWeather = LocalWeather()
-        var sky = ""
-        var pty = ""
         val today = Utils.baseDateFormat.format(Date())
         val curFcstTime = Utils.fcstTimeFormat.format(Date())
-        var fcstTime = items[0].fcstTime
+        var sky = ""    // 하늘상태
+        var pty = ""    // 강수상태
 
         items.forEachIndexed { i, it ->
-            if(fcstTime != it.fcstTime || items.lastIndex == i) {
-                if(it.fcstDate == today && it.fcstTime == curFcstTime) {
-                    mainWeatherData.weather = pty.ifEmpty { sky }
-                    mainWeatherData.temp = localWeather.temp
-                    Log.e(DEBUG, "$today $curFcstTime 현재날씨 : ${mainWeatherData.weather}, 현재기온 : ${mainWeatherData.temp}")
-                }
-
-                localWeather.apply {
-                    time = Utils.getDataFormatString(fcstTime, Utils.beforeTimeFormat, Utils.afterTimeFormat)
-                    weather = pty.ifEmpty { sky }
-                }
-
-                if(it.fcstDate.toInt() >= today.toInt() && fcstTime.toInt() > curFcstTime.toInt()) {
-                    localWeathers.add(localWeather)
-                }
-                localWeather = LocalWeather()
-                fcstTime = it.fcstTime
-                sky = ""
-                pty = ""
-            }
-
-            when(it.category) {
-                "SKY" -> {  // 하늘상태
-                    if(it.fcstValue == "1") sky = "맑음"
-                    else if(it.fcstValue == "3") sky = "구름많음"
-                    else if(it.fcstValue == "4") sky = "흐림"
+            when (it.category) {
+                // 하늘상태
+                "SKY" -> {
+                    if (it.fcstValue == "1") sky = "맑음"
+                    else if (it.fcstValue == "3") sky = "구름많음"
+                    else if (it.fcstValue == "4") sky = "흐림"
                     else Log.d(DEBUG, "calculateWeather() : SKY 날씨파싱 에러(${it.fcstValue})")
                 }
 
-                "PTY" -> {  // 강수형태
-                    if(it.fcstValue == "1") pty = "비"
-                    else if(it.fcstValue == "2") pty = "비/눈"
-                    else if(it.fcstValue == "3") pty = "눈"
-                    else if(it.fcstValue == "4") pty = "소나기"
+                // 강수형태
+                "PTY" -> {
+                    if (it.fcstValue == "1") pty = "비"
+                    else if (it.fcstValue == "2") pty = "비/눈"
+                    else if (it.fcstValue == "3") pty = "눈"
+                    else if (it.fcstValue == "4") pty = "소나기"
                     else Log.d(DEBUG, "calculateWeather() : PTY 날씨파싱 에러(${it.fcstValue})")
                 }
 
-                "POP" -> {  // 강수확률
-                    localWeather.chanceOfShower = it.fcstValue
+                // 강수확률
+                "POP" -> localWeather.chanceOfShower = it.fcstValue
+
+                // 기온
+                "TMP" -> localWeather.temp = it.fcstValue
+
+                // 최고기온
+                "TMX" -> {
+                    if (it.fcstDate == today) {
+                        mainWeatherData.tmx = it.fcstValue
+                        Log.e(DEBUG, "$today 최고기온 : ${it.fcstValue}")
+                    }
                 }
 
-                "TMP" -> {  // 기온
-                    println("xxx ${it.fcstValue}")
-                    localWeather.temp = it.fcstValue
+                //최저기온
+                "TMN" -> {
+                    if (it.fcstDate == today) {
+                        mainWeatherData.tmn = it.fcstValue
+                        Log.e(DEBUG, "$today 최저기온 : ${it.fcstValue}")
+                    }
+                }
+            }
+
+            if (items.lastIndex == i || items[i+1].fcstTime != it.fcstTime) {
+                if(it.fcstDate == today && it.fcstTime == curFcstTime) {
+                    // 현재시간
+                    mainWeatherData.weather = pty.ifEmpty { sky }
+                    mainWeatherData.temp = localWeather.temp
+                    Log.e(DEBUG, "$today $curFcstTime(현재) : 날씨=${mainWeatherData.weather}, 기온=${mainWeatherData.temp}")
+                } else if(it.fcstDate != today || it.fcstTime.toInt() > curFcstTime.toInt() ) {
+                    // 현재시간 이후
+                    localWeathers.add(
+                        localWeather.apply {
+                            time = Utils.getDataFormatString(
+                                it.fcstTime,
+                                Utils.beforeTimeFormat,
+                                Utils.afterTimeFormat
+                            )
+                            weather = pty.ifEmpty { sky }
+                        }
+                    )
                 }
 
-                "TMX" -> {  // 최고기온
-                    if(it.fcstDate == today) mainWeatherData.tmx = it.fcstValue
-                    Log.e(DEBUG, "$today 최고기온 : ${it.fcstValue}")
-                }
-
-                "TMN" -> {  // 최저기온
-                    if(it.fcstDate == today) mainWeatherData.tmn = it.fcstValue
-                    Log.e(DEBUG, "$today 최저기온 : ${it.fcstValue}")
-                }
+                localWeather = LocalWeather()
+                sky = ""
+                pty = ""
             }
         }
 
@@ -136,7 +146,7 @@ object WeatherHelper {
         var sf = tan(Math.PI * 0.25 + slat1 * 0.5)
         sf = sf.pow(sn) * cos(slat1) / sn
 
-        var ro = Math.tan(Math.PI * 0.25 + olat * 0.5)
+        var ro = tan(Math.PI * 0.25 + olat * 0.5)
         ro = re * sf / ro.pow(sn)
 
         var ra = tan(Math.PI * 0.25 + (v1) * DEGRAD * 0.5)

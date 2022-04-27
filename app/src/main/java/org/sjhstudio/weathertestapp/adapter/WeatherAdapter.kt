@@ -33,6 +33,8 @@ class WeatherAdapter: RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
 
             if(data.chanceOfShower == "0") {    // 강수량 0
                 binding.chanceOfShowerTv.visibility = View.INVISIBLE
+            } else {
+                binding.chanceOfShowerTv.visibility = View.VISIBLE
             }
         }
 

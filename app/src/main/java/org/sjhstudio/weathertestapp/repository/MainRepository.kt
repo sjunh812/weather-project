@@ -1,19 +1,22 @@
 package org.sjhstudio.weathertestapp.repository
 
-import android.app.Application
+import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.sjhstudio.weathertestapp.model.Weather
-import org.sjhstudio.weathertestapp.remote.NetworkModule
-import org.sjhstudio.weathertestapp.util.Constants.APIS_DATA_URL
+import org.sjhstudio.weathertestapp.remote.WeatherApi
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import retrofit2.Call
 import java.io.IOException
+import javax.inject.Inject
 
-class MainRepository(private val application: Application) {
+class MainRepository @Inject constructor(
+    private val application: Context,
+    private val weatherApi: WeatherApi
+    ) {
 
     suspend fun getAddress(lat: Double, long: Double): Address? = withContext(IO) {
         var addr: Address? = null
@@ -34,8 +37,7 @@ class MainRepository(private val application: Application) {
         baseData: String, baseTime: String,
         nx: Int, ny: Int
     ): Call<Weather> {
-        return NetworkModule.getWeatherApi(APIS_DATA_URL)
-            .getWeather(numOfRows, pageNo, baseData, baseTime, nx, ny)
+        return weatherApi.getWeather(numOfRows, pageNo, baseData, baseTime, nx, ny)
     }
 
 }
