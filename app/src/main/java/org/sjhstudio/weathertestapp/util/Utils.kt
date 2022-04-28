@@ -4,7 +4,9 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -65,6 +67,27 @@ object Utils {
      */
     fun setStatusBarColor(activity: Activity, color: Int) {
         activity.window?.statusBarColor = ContextCompat.getColor(activity, color)
+    }
+
+    fun getYesOrNOAlertDialog(
+        context: Context,
+        positiveListener: DialogInterface.OnClickListener,
+        negativeListener: DialogInterface.OnClickListener
+    ): AlertDialog {
+        return AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+            .apply {
+                setTitle(context.getString(R.string.network_error))
+                setMessage(context.getString(R.string.plz_try_again_in_a_few_minutes))
+                setPositiveButton(
+                    context.getString(R.string.re_try),
+                    positiveListener
+                )
+                setNegativeButton(
+                    context.getString(R.string.cancel),
+                    negativeListener
+                )
+            }.create()
+
     }
 
 }

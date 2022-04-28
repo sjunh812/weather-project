@@ -5,7 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import org.sjhstudio.weathertestapp.remote.WeatherApi
+import org.sjhstudio.weathertestapp.data.remote.WeatherApi
 import org.sjhstudio.weathertestapp.util.Constants.APIS_DATA_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

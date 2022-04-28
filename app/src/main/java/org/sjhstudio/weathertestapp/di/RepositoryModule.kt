@@ -6,7 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.sjhstudio.weathertestapp.remote.WeatherApi
+import org.sjhstudio.weathertestapp.data.remote.WeatherApi
 import org.sjhstudio.weathertestapp.repository.MainRepository
 import javax.inject.Singleton
 

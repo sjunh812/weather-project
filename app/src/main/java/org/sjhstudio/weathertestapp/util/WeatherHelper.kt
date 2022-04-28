@@ -3,9 +3,9 @@ package org.sjhstudio.weathertestapp.util
 import android.graphics.Point
 import android.util.Log
 import org.sjhstudio.weathertestapp.R
-import org.sjhstudio.weathertestapp.model.Item
-import org.sjhstudio.weathertestapp.model.LocalWeather
-import org.sjhstudio.weathertestapp.model.MainWeatherData
+import org.sjhstudio.weathertestapp.data.model.Item
+import org.sjhstudio.weathertestapp.data.model.LocalWeather
+import org.sjhstudio.weathertestapp.data.model.MainWeatherData
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import java.util.*
 import kotlin.math.*

@@ -17,4 +17,6 @@ object Constants {
 
     const val REQ_IN_APP_UPDATE = 10
 
+    const val WEATHER_API_ERROR = "weather_api_error"
+
 }

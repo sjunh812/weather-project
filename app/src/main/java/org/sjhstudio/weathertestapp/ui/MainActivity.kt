@@ -3,6 +3,7 @@ package org.sjhstudio.weathertestapp.ui
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -19,13 +20,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.adapter.WeatherAdapter
 import org.sjhstudio.weathertestapp.databinding.ActivityMainBinding
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
+import org.sjhstudio.weathertestapp.util.Constants.WEATHER_API_ERROR
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_BASE_TIME
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_NUM_OF_ROWS
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_PAGE_NO
@@ -54,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private var locationListener = MyLocationListener()
     private var weatherAdapter = WeatherAdapter()
     private var isReady = false
+    private var networkDialog: AlertDialog? = null
 
     override fun onResume() {
         super.onResume()
@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                     requestLocationPermission()
                     observeAddress()
                     observeWeather()
+                    observeError()
                 }
             })
             inAppUpdate(this@MainActivity, appUpdateManager)
@@ -109,6 +110,8 @@ class MainActivity : AppCompatActivity() {
             val data = WeatherHelper.getMainWeatherData(items)
 
             Utils.setStatusBarColor(this, WeatherHelper.getWeatherResource(data.weather!!))
+            binding.container.visibility = View.VISIBLE
+            binding.errorLayout.visibility = View.GONE
             binding.container.setBackgroundColor(ContextCompat.getColor(this, WeatherHelper.getWeatherResource(data.weather!!)))
             binding.weatherImg.setImageResource(WeatherHelper.getWeatherResource(data.weather!!, true))
             binding.dateTv.text = Utils.dateFormat.format(Date())
@@ -127,6 +130,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun observeError() {
+        mainVm.error.observe(this) { err ->
+            if(err == WEATHER_API_ERROR) {
+                isReady = true  // 화면출력
+                binding.container.visibility = View.GONE
+                binding.errorLayout.visibility = View.VISIBLE
+
+                if(networkDialog == null) {
+                    networkDialog = Utils.getYesOrNOAlertDialog(
+                        this,
+                        { dialog, _ ->
+                            getLocation()
+                            dialog.dismiss()
+                        },
+                        { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                    )
+                }
+
+                if(!(networkDialog!!.isShowing)) {
+                    networkDialog!!.show()
+                }
+            }
+        }
+    }
+
     private fun requestLocationPermission() {
         locationPermissionResult.launch(
             arrayOf(
@@ -140,19 +170,19 @@ class MainActivity : AppCompatActivity() {
         if(Utils.checkLocPermission(this, binding.root))  {
             if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 val lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                lastLocation?.let { loc ->
-                    Log.e(DEBUG, "getLastKnownLocation()")
-                    setMainViewModelData(loc)
-                }
+//                lastLocation?.let { loc ->
+//                    Log.e(DEBUG, "getLastKnownLocation()")
+//                    setMainViewModelData(loc)
+//                }
 
                 locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, 0,
                     0f, locationListener
                 )
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 0,
-                    0f, locationListener
-                )
+//                locationManager.requestLocationUpdates(
+//                    LocationManager.GPS_PROVIDER, 0,
+//                    0f, locationListener
+//                )
             } else {
                 Snackbar.make(binding.root, getString(R.string.turn_on_gps_plz), 1000).show()
             }
