@@ -6,7 +6,7 @@ import android.location.Geocoder
 import android.util.Log
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import org.sjhstudio.weathertestapp.data.model.Weather
+import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.data.remote.WeatherApi
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import retrofit2.Call

@@ -1,6 +1,6 @@
 package org.sjhstudio.weathertestapp.data.remote
 
-import org.sjhstudio.weathertestapp.data.model.Weather
+import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.util.ApiKey.WEATHER_API_KEY
 import org.sjhstudio.weathertestapp.util.Constants.JSON
 import retrofit2.Call

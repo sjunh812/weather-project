@@ -21,7 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.sjhstudio.weathertestapp.R
-import org.sjhstudio.weathertestapp.adapter.WeatherAdapter
+import org.sjhstudio.weathertestapp.ui.adapter.WeatherAdapter
 import org.sjhstudio.weathertestapp.databinding.ActivityMainBinding
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_API_ERROR
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         val lat = location.latitude
         val long = location.longitude
         val point = WeatherHelper.coordinateTransformation(lat, long)
-        val baseDate = Utils.baseDateFormat.format(Utils.getYesterday())
+        val baseDate = WeatherHelper.getBaseDate()
 
         mainVm.getAddress(lat, long)
         mainVm.getWeather(

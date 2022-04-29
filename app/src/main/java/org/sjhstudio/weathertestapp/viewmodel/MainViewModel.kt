@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.sjhstudio.weathertestapp.data.model.Weather
+import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.repository.MainRepository
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_API_ERROR
@@ -40,12 +40,12 @@ class MainViewModel @Inject constructor(
 
     fun getWeather(
         numOfRows: Int, pageNo: Int,
-        baseData: String, baseTime: String,
+        baseDate: String, baseTime: String,
         nx: Int, ny: Int
     ) {
         viewModelScope.launch {
             try {
-                val call = mainRepository.getWeather(numOfRows, pageNo, baseData, baseTime, nx, ny)
+                val call = mainRepository.getWeather(numOfRows, pageNo, baseDate, baseTime, nx, ny)
                 val response = call.await()
                 _weather.value = response
             } catch(e: Exception) {

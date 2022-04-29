@@ -1,4 +1,4 @@
-package org.sjhstudio.weathertestapp.data.model
+package org.sjhstudio.weathertestapp.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -3,9 +3,9 @@ package org.sjhstudio.weathertestapp.util
 import android.graphics.Point
 import android.util.Log
 import org.sjhstudio.weathertestapp.R
-import org.sjhstudio.weathertestapp.data.model.Item
-import org.sjhstudio.weathertestapp.data.model.LocalWeather
-import org.sjhstudio.weathertestapp.data.model.MainWeatherData
+import org.sjhstudio.weathertestapp.model.Item
+import org.sjhstudio.weathertestapp.model.LocalWeather
+import org.sjhstudio.weathertestapp.model.MainWeatherData
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import java.util.*
 import kotlin.math.*
@@ -33,6 +33,19 @@ object WeatherHelper {
             else String.format("%04d", y * 100)
         } else {
             String.format("%04d", y * 100)
+        }
+    }
+
+    fun getBaseDate(): String {
+        val cal = Calendar.getInstance()
+            .apply { time = Date() }
+        val hour = cal.get(Calendar.HOUR_OF_DAY)
+        val minute = cal.get(Calendar.MINUTE)
+
+        return if(hour >= 23 && minute >= 10) {
+            Utils.baseDateFormat.format(Date())
+        } else {
+            Utils.baseDateFormat.format(Utils.getYesterday())
         }
     }
 

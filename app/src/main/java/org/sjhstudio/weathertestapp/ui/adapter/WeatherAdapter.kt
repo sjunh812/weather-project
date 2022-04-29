@@ -1,4 +1,4 @@
-package org.sjhstudio.weathertestapp.adapter
+package org.sjhstudio.weathertestapp.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.databinding.ItemWeatherBinding
-import org.sjhstudio.weathertestapp.data.model.LocalWeather
+import org.sjhstudio.weathertestapp.model.LocalWeather
 import org.sjhstudio.weathertestapp.util.WeatherHelper
 
 class WeatherAdapter: RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
