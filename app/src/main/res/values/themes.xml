@@ -20,5 +20,4 @@
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@mipmap/ic_launcher</item>
         <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">#00D5FF</item>
     </style>
-
 </resources>

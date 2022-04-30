@@ -49,6 +49,19 @@ object WeatherHelper {
         }
     }
 
+    fun getBaseTime(): String {
+        val cal = Calendar.getInstance()
+            .apply { time = Date() }
+        val hour = cal.get(Calendar.HOUR_OF_DAY)
+        val minute = cal.get(Calendar.MINUTE)
+
+        return if(hour >= 23 && minute >= 10) {
+            "0200"
+        } else {
+            "2300"
+        }
+    }
+
     /**
      * MainWeatherData 가공
      */
@@ -109,7 +122,9 @@ object WeatherHelper {
                     mainWeatherData.weather = pty.ifEmpty { sky }
                     mainWeatherData.temp = localWeather.temp
                     Log.e(DEBUG, "$today $curFcstTime(현재) : 날씨=${mainWeatherData.weather}, 기온=${mainWeatherData.temp}")
-                } else if(it.fcstDate != today || it.fcstTime.toInt() > curFcstTime.toInt() ) {
+                } else if(it.fcstDate == today && it.fcstTime.toInt() > curFcstTime.toInt()
+                    ||  it.fcstDate.toInt() > today.toInt()
+                ) {
                     // 현재시간 이후
                     localWeathers.add(
                         localWeather.apply {

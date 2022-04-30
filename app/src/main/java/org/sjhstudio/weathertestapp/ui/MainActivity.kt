@@ -194,11 +194,12 @@ class MainActivity : AppCompatActivity() {
         val long = location.longitude
         val point = WeatherHelper.coordinateTransformation(lat, long)
         val baseDate = WeatherHelper.getBaseDate()
+        val baseTime = WeatherHelper.getBaseTime()
 
         mainVm.getAddress(lat, long)
         mainVm.getWeather(
             WEATHER_NUM_OF_ROWS, WEATHER_PAGE_NO,
-            baseDate, WEATHER_BASE_TIME,
+            baseDate, baseTime,
             point.x, point.y
         )
 
