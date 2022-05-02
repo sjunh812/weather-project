@@ -8,7 +8,9 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.os.Build
 import android.view.View
+import android.view.WindowInsetsController
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -67,6 +69,14 @@ object Utils {
      */
     fun setStatusBarColor(activity: Activity, color: Int) {
         activity.window?.statusBarColor = ContextCompat.getColor(activity, color)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.window?.insetsController?.setSystemBarsAppearance(
+                0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        } else {
+            activity.window?.decorView?.systemUiVisibility = 0
+        }
     }
 
     fun getYesOrNOAlertDialog(

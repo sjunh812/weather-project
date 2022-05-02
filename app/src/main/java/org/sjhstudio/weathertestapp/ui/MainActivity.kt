@@ -25,7 +25,6 @@ import org.sjhstudio.weathertestapp.ui.adapter.WeatherAdapter
 import org.sjhstudio.weathertestapp.databinding.ActivityMainBinding
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_API_ERROR
-import org.sjhstudio.weathertestapp.util.Constants.WEATHER_BASE_TIME
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_NUM_OF_ROWS
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_PAGE_NO
 import org.sjhstudio.weathertestapp.util.InAppUpdateHelper
@@ -42,7 +41,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private val binding: ActivityMainBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_main) }
     private val mainVm: MainViewModel by viewModels()
 
     @Inject
@@ -50,10 +49,10 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var appUpdateManager: AppUpdateManager
 
-    private var locationListener = MyLocationListener()
-    private var weatherAdapter = WeatherAdapter()
-    private var isReady = false
+    private val locationListener: MyLocationListener by lazy { MyLocationListener() }
+    private val weatherAdapter: WeatherAdapter by lazy { WeatherAdapter() }
     private var networkDialog: AlertDialog? = null
+    private var isReady = false
 
     override fun onResume() {
         super.onResume()
@@ -68,8 +67,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
         InAppUpdateHelper.apply {
             setOnInAppUpdateCallback(object: OnInAppUpdateCallback {
                 override fun onFailed() {
@@ -133,9 +130,7 @@ class MainActivity : AppCompatActivity() {
     private fun observeError() {
         mainVm.error.observe(this) { err ->
             if(err == WEATHER_API_ERROR) {
-                isReady = true  // 화면출력
-                binding.container.visibility = View.GONE
-                binding.errorLayout.visibility = View.VISIBLE
+                setErrorUi(getString(R.string.notice_server_network_error))
 
                 if(networkDialog == null) {
                     networkDialog = Utils.getYesOrNOAlertDialog(
@@ -169,9 +164,9 @@ class MainActivity : AppCompatActivity() {
     private fun getLocation() {
         if(Utils.checkLocPermission(this, binding.root))  {
             if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                val lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+//                val lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 //                lastLocation?.let { loc ->
-//                    Log.e(DEBUG, "getLastKnownLocation()")
+//                    Log.e(DEBUG, "getLastKnownLocation() : GPS_PROVIDER")
 //                    setMainViewModelData(loc)
 //                }
 
@@ -179,10 +174,10 @@ class MainActivity : AppCompatActivity() {
                     LocationManager.NETWORK_PROVIDER, 0,
                     0f, locationListener
                 )
-//                locationManager.requestLocationUpdates(
-//                    LocationManager.GPS_PROVIDER, 0,
-//                    0f, locationListener
-//                )
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, 0,
+                    0f, locationListener
+                )
             } else {
                 Snackbar.make(binding.root, getString(R.string.turn_on_gps_plz), 1000).show()
             }
@@ -204,7 +199,14 @@ class MainActivity : AppCompatActivity() {
         )
 
         Log.e(DEBUG, "getAddress() : 위도=$lat, 경도=$long")
-        Log.e(DEBUG, "getWeather() : baseDate($baseDate), baseTime($WEATHER_BASE_TIME) nx=${point.x}, ny=${point.y}")
+        Log.e(DEBUG, "getWeather() : baseDate($baseDate), baseTime($baseTime) nx=${point.x}, ny=${point.y}")
+    }
+
+    private fun setErrorUi(errMsg: String) {
+        isReady = true  // 화면출력
+        binding.container.visibility = View.GONE
+        binding.errorLayout.visibility = View.VISIBLE
+        binding.errorTv.text = errMsg
     }
 
     private val locationPermissionResult = registerForActivityResult(
@@ -223,6 +225,8 @@ class MainActivity : AppCompatActivity() {
 
             else -> {
                 Log.e(DEBUG, "위치권한 거부")
+                setErrorUi(getString(R.string.permit_location_plz))
+                Snackbar.make(binding.container, "앱 사용을 위해 위치권한을 허용해주세요.", Snackbar.LENGTH_SHORT).show()
             }
         }
     }

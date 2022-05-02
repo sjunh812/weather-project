@@ -10,14 +10,15 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/splash_background</item>
+        <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
     </style>
 
     <style name="Theme.SplashScreen" parent="Theme.WeatherTestApp">
         <!-- Splash screen -->
-        <item name="android:windowSplashScreenBackground" tools:targetApi="s">#00D5FF</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/splash_background</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@mipmap/ic_launcher</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">#00D5FF</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@color/splash_background</item>
     </style>
 </resources>

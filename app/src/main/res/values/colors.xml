@@ -15,5 +15,6 @@
     <color name="shower">#6680CC</color>
     <color name="rain_snow">#0077CC</color>
     <color name="snow">#0095FF</color>
-
+    <color name="splash_font">#000000</color>
+    <color name="splash_background">#FFFFFFFF</color>
 </resources>
