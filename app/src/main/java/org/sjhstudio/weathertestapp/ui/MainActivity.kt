@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -23,14 +24,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.ui.adapter.WeatherAdapter
 import org.sjhstudio.weathertestapp.databinding.ActivityMainBinding
+import org.sjhstudio.weathertestapp.util.*
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_API_ERROR
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_NUM_OF_ROWS
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_PAGE_NO
-import org.sjhstudio.weathertestapp.util.InAppUpdateHelper
-import org.sjhstudio.weathertestapp.util.OnInAppUpdateCallback
-import org.sjhstudio.weathertestapp.util.Utils
-import org.sjhstudio.weathertestapp.util.WeatherHelper
 import org.sjhstudio.weathertestapp.viewmodel.MainViewModel
 import java.util.*
 import javax.inject.Inject
@@ -43,14 +41,14 @@ class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_main) }
     private val mainVm: MainViewModel by viewModels()
+    private val locationListener: MyLocationListener by lazy { MyLocationListener() }
+    private val weatherAdapter: WeatherAdapter by lazy { WeatherAdapter() }
 
     @Inject
     lateinit var locationManager: LocationManager
     @Inject
     lateinit var appUpdateManager: AppUpdateManager
 
-    private val locationListener: MyLocationListener by lazy { MyLocationListener() }
-    private val weatherAdapter: WeatherAdapter by lazy { WeatherAdapter() }
     private var networkDialog: AlertDialog? = null
     private var isReady = false
 
@@ -208,6 +206,17 @@ class MainActivity : AppCompatActivity() {
         binding.errorLayout.visibility = View.VISIBLE
         binding.errorTv.text = errMsg
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Constants.REQ_IN_APP_UPDATE) {
+            if (resultCode != RESULT_OK) {
+                println("xxx Update flow failed! Result code: $resultCode")
+                finishAffinity()    // 앱 종료
+            }
+        }
+    }
+
 
     private val locationPermissionResult = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
