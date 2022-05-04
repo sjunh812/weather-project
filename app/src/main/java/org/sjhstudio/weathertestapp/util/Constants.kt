@@ -11,7 +11,6 @@ object Constants {
 
     const val WEATHER_NUM_OF_ROWS = 580 // 한페이지 결과수
     const val WEATHER_PAGE_NO = 1   // 페이지번호
-//    const val WEATHER_BASE_TIME = "2000"    // 발표시각
     const val WEATHER_API_ERROR = "weather_api_error"
 
     const val IN_APP_UPDATE_TYPE = AppUpdateType.IMMEDIATE  // 인앱업데이트=강제

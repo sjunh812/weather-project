@@ -12,22 +12,22 @@ import kotlin.math.*
 
 object WeatherHelper {
 
+    private val calendar: Calendar = Calendar.getInstance().apply { time = Date() }
+    private val hour: Int = calendar.get(Calendar.HOUR_OF_DAY)
+    private val minute: Int = calendar.get(Calendar.MINUTE)
+
     fun calculateBaseTime(): String {
         // Base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
         // API 제공 시간(~이후) : 02:10, 05:10, 08:10, 11:10, 14:10, 17:10, 20:10, 23:10
         // 수식 : y = 3x - 1
-        val cal = Calendar.getInstance()
-        cal.time = Date()
+        var newHour = hour
 
-        var hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
+        if(hour < 2) newHour = 2
 
-        if(hour < 2) hour = 2
-
-        val x = (hour + 1) / 3
+        val x = (newHour + 1) / 3
         var y = 3 * x - 1
 
-        return if((hour + 1) % 3 == 0 && minute <= 10) {
+        return if((newHour + 1) % 3 == 0 && minute <= 10) {
             y -= 3
             if(y < 0) "2300"
             else String.format("%04d", y * 100)
@@ -36,34 +36,15 @@ object WeatherHelper {
         }
     }
 
-    fun getBaseDate(): String {
-        val cal = Calendar.getInstance()
-            .apply { time = Date() }
-        val hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
+    fun getBaseDate(): String =
+        if(hour >= 23 && minute >= 10) Utils.baseDateFormat.format(Date())
+        else Utils.baseDateFormat.format(Utils.getYesterday())
 
-        return if(hour >= 23 && minute >= 10) {
-            Utils.baseDateFormat.format(Date())
-        } else {
-            Utils.baseDateFormat.format(Utils.getYesterday())
-        }
-    }
-
-    fun getBaseTime(): String {
-        val cal = Calendar.getInstance()
-            .apply { time = Date() }
-        val hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
-
-        return if(hour >= 23 && minute >= 10) {
-            "0200"
-        } else {
-            "2300"
-        }
-    }
+    fun getBaseTime(): String =
+        if(hour >= 23 && minute >= 10) "0200" else "2300"
 
     /**
-     * MainWeatherData 가공
+     * Item -> MainWeatherData
      */
     fun getMainWeatherData(items: List<Item>): MainWeatherData {
         val mainWeatherData = MainWeatherData()
@@ -123,7 +104,7 @@ object WeatherHelper {
                     mainWeatherData.temp = localWeather.temp
                     Log.e(DEBUG, "$today $curFcstTime(현재) : 날씨=${mainWeatherData.weather}, 기온=${mainWeatherData.temp}")
                 } else if(it.fcstDate == today && it.fcstTime.toInt() > curFcstTime.toInt()
-                    ||  it.fcstDate.toInt() > today.toInt()
+                    || it.fcstDate.toInt() > today.toInt()
                 ) {
                     // 현재시간 이후
                     localWeathers.add(

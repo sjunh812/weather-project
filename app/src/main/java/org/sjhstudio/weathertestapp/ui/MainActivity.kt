@@ -103,25 +103,24 @@ class MainActivity : AppCompatActivity() {
             isReady = true  // 화면출력
             val items = weather.response.body.items.item
             val data = WeatherHelper.getMainWeatherData(items)
+            val colorRes = WeatherHelper.getWeatherResource(data.weather!!)
+            val imgRes = WeatherHelper.getWeatherResource(data.weather!!, true)
 
-            Utils.setStatusBarColor(this, WeatherHelper.getWeatherResource(data.weather!!))
+            Utils.setStatusBarColor(this, colorRes)
+            binding.mainWeatherData = data
             binding.container.visibility = View.VISIBLE
             binding.errorLayout.visibility = View.GONE
-            binding.container.setBackgroundColor(ContextCompat.getColor(this, WeatherHelper.getWeatherResource(data.weather!!)))
-            binding.weatherImg.setImageResource(WeatherHelper.getWeatherResource(data.weather!!, true))
+            binding.container.setBackgroundColor(ContextCompat.getColor(this, colorRes))
+            binding.weatherImg.setImageResource(imgRes)
             binding.dateTv.text = Utils.dateFormat.format(Date())
-            binding.weatherTv.text = data.weather
-            binding.tempTv.text = "${data.temp}"
             binding.tmxTmnTv.text = "최고 ${data.tmx}° / 최저 ${data.tmn}°"
             binding.weatherRv.apply {
-                weatherAdapter.items = data.weathers!!
-                adapter = weatherAdapter
+                adapter = weatherAdapter.apply { this.items = data.weathers!! }
                 layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
             }
-
-            for(item in items) {
+/*            for(item in items) {
                 Log.e(DEBUG, "$item")
-            }
+            }*/
         }
     }
 
@@ -182,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setMainViewModelData(location: Location) {
+    private fun requestMainViewModelLiveData(location: Location) {
         val lat = location.latitude
         val long = location.longitude
         val point = WeatherHelper.coordinateTransformation(lat, long)
@@ -217,7 +216,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private val locationPermissionResult = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -244,8 +242,16 @@ class MainActivity : AppCompatActivity() {
 
         override fun onLocationChanged(location: Location)  {
             Log.e(DEBUG, "onLocationChanged()")
-            setMainViewModelData(location)
+            requestMainViewModelLiveData(location)
             locationManager.removeUpdates(locationListener)
+        }
+
+        override fun onProviderEnabled(provider: String) {
+            super.onProviderEnabled(provider)
+        }
+
+        override fun onProviderDisabled(provider: String) {
+            super.onProviderDisabled(provider)
         }
 
     }

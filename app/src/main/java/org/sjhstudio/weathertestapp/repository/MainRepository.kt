@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.sjhstudio.weathertestapp.model.Weather
@@ -14,7 +15,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
-    private val application: Context,
+    @ApplicationContext private val application: Context,
     private val weatherApi: WeatherApi
     ) {
 
