@@ -99,8 +99,8 @@
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/temp_tv"
                         android:text="@string/degree"
-                        android:textSize="50sp"
                         android:textColor="@color/white"
+                        android:textSize="50sp"
                         android:textStyle="bold" />
 
                 </RelativeLayout>

@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.scopes.ActivityScoped
+import org.sjhstudio.weathertestapp.repository.SearchRepository
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -25,6 +26,12 @@ object ActivityModule {
     @Provides
     fun getAppUpdateManager(activity: Activity): AppUpdateManager {
         return AppUpdateManagerFactory.create(activity)
+    }
+
+    @ActivityScoped
+    @Provides
+    fun getSearchRepository(activity: Activity): SearchRepository {
+        return SearchRepository(activity)
     }
 
 }
