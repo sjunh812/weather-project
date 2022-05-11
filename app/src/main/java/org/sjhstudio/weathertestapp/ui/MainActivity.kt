@@ -76,6 +76,10 @@ class MainActivity : AppCompatActivity() {
             })
             inAppUpdate(this@MainActivity, appUpdateManager)
         }
+        
+        binding.searchBtn.setOnClickListener {  // 지역검색
+            startActivity(Intent(this, SearchActivity::class.java))
+        }
 
         val content = findViewById<View>(android.R.id.content)
         content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
