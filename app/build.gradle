@@ -80,4 +80,6 @@ dependencies {
     // For Kotlin users also add the Kotlin extensions library for Play Core:
     implementation 'com.google.android.play:core-ktx:1.8.1'
 
+    // Naver map sdk
+    implementation 'com.naver.maps:map-sdk:3.14.0'
 }

@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.sjhstudio.weathertestapp.model.ReverseGeocoder
 import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.repository.MainRepository
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
@@ -19,8 +20,8 @@ class MainViewModel @Inject constructor(
     private val mainRepository: MainRepository
 ): AndroidViewModel(application) {
 
-    private var _address = MutableLiveData<Address>()
-    val address: LiveData<Address>
+    private var _address = MutableLiveData<ReverseGeocoder>()
+    val address: LiveData<ReverseGeocoder>
         get() = _address
 
     private var _weather = MutableLiveData<Weather>()
@@ -33,8 +34,15 @@ class MainViewModel @Inject constructor(
 
     fun getAddress(lat: Double, long: Double) {
         viewModelScope.launch {
-            val address = mainRepository.getAddress(lat, long)
-            address?.let { _address.value = it }
+            try {
+                val coords = "$long,$lat"
+                val call = mainRepository.reverseGeocoding(coords)
+                val response = call.await()
+                _address.value = response
+            } catch(e: Exception) {
+                e.printStackTrace()
+                Log.e(DEBUG, "Reverse Geocoding Api Error")
+            }
         }
     }
 

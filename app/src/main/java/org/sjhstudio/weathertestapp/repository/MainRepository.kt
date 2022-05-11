@@ -4,15 +4,18 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.sjhstudio.weathertestapp.data.remote.NaverMapApi
 import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.data.remote.WeatherApi
+import org.sjhstudio.weathertestapp.model.ReverseGeocoder
 import retrofit2.Call
 import java.io.IOException
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
     @ApplicationContext private val application: Context,
-    private val weatherApi: WeatherApi
+    private val weatherApi: WeatherApi,
+    private val naverMapApi: NaverMapApi
     ) {
 
     fun getAddress(lat: Double, long: Double): Address?  {
@@ -40,6 +43,11 @@ class MainRepository @Inject constructor(
         }
 
         return list
+    }
+
+    fun reverseGeocoding(coords: String): Call<ReverseGeocoder> {
+        println("xxx reverseGeocoding()")
+        return naverMapApi.reverseGeocoding(coords)
     }
 
     fun getWeather(

@@ -8,6 +8,7 @@ object Constants {
     const val JSON = "JSON"
 
     const val APIS_DATA_URL = "http://apis.data.go.kr"
+    const val NAVER_MAP_API_URL = "https://naveropenapi.apigw.ntruss.com"
 
     const val WEATHER_NUM_OF_ROWS = 580 // 한페이지 결과수
     const val WEATHER_PAGE_NO = 1   // 페이지번호

@@ -95,9 +95,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeAddress() {
-        mainVm.address.observe(this) { addr ->
-            val text = "${addr.subLocality ?: ""} ${addr.thoroughfare ?: ""}"
-            binding.addressTv.text = text
+        mainVm.address.observe(this) { reverseGeocode ->
+            if(reverseGeocode.results.isNotEmpty()) {
+                val result = reverseGeocode.results.first()
+                val country = result.region.area0.name  // 국가
+                val sido = result.region.area1.name // 시도
+                val gungu = result.region.area2.name    // 시군구
+                val dong = result.region.area3.name // 읍면동
+                val lee = result.region.area4.name  // 리
+                val address = "$gungu $dong $lee"
+
+                binding.addressTv.text = address
+            }
         }
     }
 
