@@ -9,7 +9,7 @@ import org.sjhstudio.weathertestapp.databinding.ItemSearchBinding
 import org.sjhstudio.weathertestapp.model.Addresses
 
 class SearchAdapter: RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
-
+    // 흠
     private var items = arrayListOf<Addresses>()
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
