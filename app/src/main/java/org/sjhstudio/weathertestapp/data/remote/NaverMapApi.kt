@@ -1,5 +1,6 @@
 package org.sjhstudio.weathertestapp.data.remote
 
+import org.sjhstudio.weathertestapp.model.Geocoder
 import org.sjhstudio.weathertestapp.model.ReverseGeocoder
 import org.sjhstudio.weathertestapp.util.ApiKey.NAVER_MAP_ACCEPT
 import org.sjhstudio.weathertestapp.util.ApiKey.NAVER_MAP_CLIENT_ID
@@ -21,7 +22,7 @@ interface NaverMapApi {
         @Query("query") query: String,
         @Query("page") page: Int = 1,
         @Query("count") count: Int = 10
-    )
+    ): Call<Geocoder>
 
     @Headers(
         "X-NCP-APIGW-API-KEY-ID: $NAVER_MAP_CLIENT_ID",

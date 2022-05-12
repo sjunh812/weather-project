@@ -1,6 +1,5 @@
 package org.sjhstudio.weathertestapp.ui
 
-import android.location.Address
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -10,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.databinding.ActivitySearchBinding
+import org.sjhstudio.weathertestapp.model.Addresses
 import org.sjhstudio.weathertestapp.ui.adapter.SearchAdapter
 import org.sjhstudio.weathertestapp.viewmodel.SearchViewModel
 
@@ -42,7 +42,7 @@ class SearchActivity : AppCompatActivity() {
         searchVm.addrList.observe(this) { list ->
             if(list.isNotEmpty()) {
                 println("xxx $list")
-                searchAdapter.setItems(list as ArrayList<Address>)
+                searchAdapter.setItems(list as ArrayList<Addresses>)
             } else {
                 Snackbar.make(binding.searchRv, "검색결과가 없습니다.", 1000).show()
             }

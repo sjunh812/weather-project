@@ -1,48 +1,21 @@
 package org.sjhstudio.weathertestapp.repository
 
-import android.content.Context
-import android.location.Address
-import android.location.Geocoder
-import dagger.hilt.android.qualifiers.ApplicationContext
 import org.sjhstudio.weathertestapp.data.remote.NaverMapApi
 import org.sjhstudio.weathertestapp.model.Weather
 import org.sjhstudio.weathertestapp.data.remote.WeatherApi
+import org.sjhstudio.weathertestapp.model.Geocoder
 import org.sjhstudio.weathertestapp.model.ReverseGeocoder
 import retrofit2.Call
-import java.io.IOException
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
-    @ApplicationContext private val application: Context,
     private val weatherApi: WeatherApi,
     private val naverMapApi: NaverMapApi
     ) {
 
-    fun getAddress(lat: Double, long: Double): Address?  {
-        println("xxx getAddress() : lat=$lat, long=$long")
-        var addr: Address? = null
-
-        try {
-            val addrList = Geocoder(application).getFromLocation(lat, long, 5)
-            if(addrList.isNotEmpty()) addr = addrList[0]
-        } catch(e: IOException) {
-            e.printStackTrace()
-        }
-
-        return addr
-    }
-
-    fun getAddressList(locName: String): List<Address>? {
-        println("xxx getAddressList() : locName=$locName")
-        var list: List<Address>? = null
-
-        try {
-            list = Geocoder(application).getFromLocationName(locName, 10)
-        } catch(e: IOException) {
-            e.printStackTrace()
-        }
-
-        return list
+    fun geocoding(query: String): Call<Geocoder> {
+        println("xxx geocoding()")
+        return naverMapApi.geocoding(query)
     }
 
     fun reverseGeocoding(coords: String): Call<ReverseGeocoder> {

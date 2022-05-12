@@ -1,7 +1,6 @@
 package org.sjhstudio.weathertestapp.viewmodel
 
 import android.app.Application
-import android.location.Address
 import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
