@@ -17,4 +17,6 @@ object Constants {
     const val IN_APP_UPDATE_TYPE = AppUpdateType.IMMEDIATE  // 인앱업데이트=강제
     const val REQ_IN_APP_UPDATE = 10
 
+    const val RESULT_SEARCH_AREA = "result_search_area"
+
 }

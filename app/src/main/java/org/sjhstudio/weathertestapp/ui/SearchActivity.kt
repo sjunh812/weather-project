@@ -1,6 +1,6 @@
 package org.sjhstudio.weathertestapp.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
@@ -11,10 +11,13 @@ import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.databinding.ActivitySearchBinding
 import org.sjhstudio.weathertestapp.model.Addresses
 import org.sjhstudio.weathertestapp.ui.adapter.SearchAdapter
+import org.sjhstudio.weathertestapp.ui.adapter.SearchAdapterCallback
+import org.sjhstudio.weathertestapp.util.BaseActivity
+import org.sjhstudio.weathertestapp.util.Constants.RESULT_SEARCH_AREA
 import org.sjhstudio.weathertestapp.viewmodel.SearchViewModel
 
 @AndroidEntryPoint
-class SearchActivity : AppCompatActivity() {
+class SearchActivity: BaseActivity() {
 
     private val binding: ActivitySearchBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_search) }
     private val searchVm: SearchViewModel by viewModels()
@@ -22,6 +25,10 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         binding.searchBtn.setOnClickListener {
             val input = binding.searchEt.text.toString()
 
@@ -32,6 +39,15 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         binding.searchRv.apply {
+            searchAdapter.apply {
+                setOnSearchAdapterCallback(object: SearchAdapterCallback {
+                    override fun onSelected(item: Addresses) {
+                        val intent = Intent().apply { putExtra(RESULT_SEARCH_AREA, item) }
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+                })
+            }
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(this@SearchActivity)
         }

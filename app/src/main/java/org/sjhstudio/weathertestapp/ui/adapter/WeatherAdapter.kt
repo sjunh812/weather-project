@@ -12,7 +12,7 @@ import org.sjhstudio.weathertestapp.util.WeatherHelper
 
 class WeatherAdapter: RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
 
-    var items = arrayListOf<LocalWeather>()
+    private var items = arrayListOf<LocalWeather>()
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
@@ -38,6 +38,11 @@ class WeatherAdapter: RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
             }
         }
 
+    }
+
+    fun setItems(items: ArrayList<LocalWeather>) {
+        this.items = items
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

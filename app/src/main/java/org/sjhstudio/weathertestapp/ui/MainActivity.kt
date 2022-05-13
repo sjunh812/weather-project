@@ -8,7 +8,6 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -24,8 +23,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.ui.adapter.WeatherAdapter
 import org.sjhstudio.weathertestapp.databinding.ActivityMainBinding
+import org.sjhstudio.weathertestapp.model.Addresses
 import org.sjhstudio.weathertestapp.util.*
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
+import org.sjhstudio.weathertestapp.util.Constants.RESULT_SEARCH_AREA
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_API_ERROR
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_NUM_OF_ROWS
 import org.sjhstudio.weathertestapp.util.Constants.WEATHER_PAGE_NO
@@ -37,7 +38,7 @@ import javax.inject.Inject
  * AndroidEntryPoint : 객체가 주입되는 대상
  */
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity: BaseActivity() {
 
     private val binding: ActivityMainBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_main) }
     private val mainVm: MainViewModel by viewModels()
@@ -78,7 +79,11 @@ class MainActivity : AppCompatActivity() {
         }
         
         binding.searchBtn.setOnClickListener {  // 지역검색
-            startActivity(Intent(this, SearchActivity::class.java))
+            searchAreaResult.launch(Intent(this, SearchActivity::class.java))
+        }
+        binding.weatherRv.apply {
+            adapter = weatherAdapter
+            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
         }
 
         val content = findViewById<View>(android.R.id.content)
@@ -113,6 +118,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun observeWeather() {
         mainVm.weather.observe(this) { weather ->
+            println("xxx observeWeather()")
             isReady = true  // 화면출력
             val items = weather.response.body.items.item
             val data = WeatherHelper.getMainWeatherData(items)
@@ -127,10 +133,7 @@ class MainActivity : AppCompatActivity() {
             binding.weatherImg.setImageResource(imgRes)
             binding.dateTv.text = Utils.dateFormat.format(Date())
             binding.tmxTmnTv.text = "최고 ${data.tmx}° / 최저 ${data.tmn}°"
-            binding.weatherRv.apply {
-                adapter = weatherAdapter.apply { this.items = data.weathers!! }
-                layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
-            }
+            weatherAdapter.setItems(data.weathers!!)
 /*            for(item in items) {
                 Log.e(DEBUG, "$item")
             }*/
@@ -194,9 +197,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestMainViewModelLiveData(location: Location) {
-        val lat = location.latitude
-        val long = location.longitude
+    private fun requestMainViewModelLiveData(lat: Double, long: Double) {
         val point = WeatherHelper.coordinateTransformation(lat, long)
         val baseDate = WeatherHelper.getBaseDate()
         val baseTime = WeatherHelper.getBaseTime()
@@ -219,6 +220,7 @@ class MainActivity : AppCompatActivity() {
         binding.errorTv.text = errMsg
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Constants.REQ_IN_APP_UPDATE) {
@@ -251,11 +253,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val searchAreaResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if(result.resultCode == RESULT_OK) {
+            // 지역검색 완료!!
+            // 해당지역 날씨요청
+            val item = result.data?.getParcelableExtra<Addresses>(RESULT_SEARCH_AREA)
+            item?.let {
+                try {
+                    requestMainViewModelLiveData(item.y.toDouble(), item.x.toDouble())
+                } catch(e: Exception) {
+                    e.printStackTrace()
+                    Log.e(DEBUG, "위,경도 파싱에러")
+                }
+            }
+        }
+    }
+
     inner class MyLocationListener: LocationListener  {
 
         override fun onLocationChanged(location: Location)  {
             Log.e(DEBUG, "onLocationChanged()")
-            requestMainViewModelLiveData(location)
+            requestMainViewModelLiveData(location.latitude, location.longitude)
             locationManager.removeUpdates(locationListener)
         }
 
