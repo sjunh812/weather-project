@@ -133,6 +133,7 @@ class MainActivity: BaseActivity() {
             binding.weatherImg.setImageResource(imgRes)
             binding.dateTv.text = Utils.dateFormat.format(Date())
             binding.tmxTmnTv.text = "최고 ${data.tmx}° / 최저 ${data.tmn}°"
+            binding.hourlyForecastProgressBar.visibility = View.GONE
             weatherAdapter.setItems(data.weathers!!)
 /*            for(item in items) {
                 Log.e(DEBUG, "$item")
@@ -262,6 +263,8 @@ class MainActivity: BaseActivity() {
             val item = result.data?.getParcelableExtra<Addresses>(RESULT_SEARCH_AREA)
             item?.let {
                 try {
+                    binding.hourlyForecastProgressBar.visibility = View.VISIBLE
+                    weatherAdapter.clear()
                     requestMainViewModelLiveData(item.y.toDouble(), item.x.toDouble())
                 } catch(e: Exception) {
                     e.printStackTrace()

@@ -21,7 +21,7 @@ import java.util.*
 object Utils {
 
     @SuppressLint("SimpleDateFormat")
-    val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일 a h시 mm분")
+    val dateFormat = SimpleDateFormat("yyyy년 M월 d일 a h시 m분")
     @SuppressLint("SimpleDateFormat")
     val baseDateFormat = SimpleDateFormat("yyyyMMdd")
     @SuppressLint("SimpleDateFormat")

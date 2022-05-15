@@ -45,6 +45,11 @@ class WeatherAdapter: RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun clear() {
+        this.items = arrayListOf()
+        notifyItemRangeRemoved(0, items.size)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_weather, parent, false)

@@ -6,6 +6,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/splash_background"
         tools:context=".ui.SearchActivity">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -17,7 +18,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white">
+                android:background="@color/splash_background">
 
                 <TextView
                     android:layout_width="wrap_content"

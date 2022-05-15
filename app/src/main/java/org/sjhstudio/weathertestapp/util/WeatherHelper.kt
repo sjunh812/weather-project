@@ -213,8 +213,8 @@ object WeatherHelper {
 
             "비/눈" -> {
                 if(isImage) {
-                    if(isSmallImage) R.drawable.ic_rain_snow
-                    else R.drawable.ic_rain_snow_small
+                    if(isSmallImage) R.drawable.ic_rain_snow_small
+                    else R.drawable.ic_rain_snow
                 } else R.color.rain_snow
             }
 
