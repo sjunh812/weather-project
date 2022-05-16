@@ -2,12 +2,12 @@
     <!-- Base application theme. -->
     <style name="Theme.WeatherTestApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#00D5FF</item>
-        <item name="colorPrimaryVariant">#00D5FF</item>
+        <item name="colorPrimary">#3333CC</item>
+        <item name="colorPrimaryVariant">#3333CC</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#00D5FF</item>
-        <item name="colorSecondaryVariant">#00D5FF</item>
+        <item name="colorSecondary">#3333CC</item>
+        <item name="colorSecondaryVariant">#3333CC</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" >@color/splash_background</item>

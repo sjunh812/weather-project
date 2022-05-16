@@ -5,6 +5,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -77,14 +78,8 @@ class MainActivity: BaseActivity() {
             })
             inAppUpdate(this@MainActivity, appUpdateManager)
         }
-        
-        binding.searchBtn.setOnClickListener {  // 지역검색
-            searchAreaResult.launch(Intent(this, SearchActivity::class.java))
-        }
-        binding.weatherRv.apply {
-            adapter = weatherAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
-        }
+
+        initUi()
 
         val content = findViewById<View>(android.R.id.content)
         content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
@@ -97,6 +92,19 @@ class MainActivity: BaseActivity() {
                 }
             }
         })
+    }
+
+    private fun initUi() {
+        setSwipeRefreshLayout()
+        binding.dateTv.isSelected = true
+        binding.addressTv.isSelected = true
+        binding.searchBtn.setOnClickListener {  // 지역검색
+            searchAreaResult.launch(Intent(this, SearchActivity::class.java))
+        }
+        binding.weatherRv.apply {
+            adapter = weatherAdapter
+            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+        }
     }
 
     private fun observeAddress() {
@@ -134,7 +142,9 @@ class MainActivity: BaseActivity() {
             binding.dateTv.text = Utils.dateFormat.format(Date())
             binding.tmxTmnTv.text = "최고 ${data.tmx}° / 최저 ${data.tmn}°"
             binding.hourlyForecastProgressBar.visibility = View.GONE
+            binding.swipeRefreshLayout.isRefreshing = false
             weatherAdapter.setItems(data.weathers!!)
+            Snackbar.make(binding.swipeRefreshLayout, R.string.success_weather_loading, 1000).show()
 /*            for(item in items) {
                 Log.e(DEBUG, "$item")
             }*/
@@ -212,6 +222,15 @@ class MainActivity: BaseActivity() {
 
         Log.e(DEBUG, "getAddress() : 위도=$lat, 경도=$long")
         Log.e(DEBUG, "getWeather() : baseDate($baseDate), baseTime($baseTime) nx=${point.x}, ny=${point.y}")
+    }
+
+    private fun setSwipeRefreshLayout() {
+        binding.swipeRefreshLayout.apply {
+            setColorSchemeColors(Color.parseColor("#3333CC"))
+            setOnRefreshListener {
+                getLocation()
+            }
+        }
     }
 
     private fun setErrorUi(errMsg: String) {

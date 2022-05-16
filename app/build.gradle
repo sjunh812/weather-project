@@ -13,8 +13,8 @@ android {
         applicationId "org.sjhstudio.weathertestapp"
         minSdk 24
         targetSdk 31
-        versionCode 102
-        versionName "1.0.2"
+        versionCode 106
+        versionName "1.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -86,4 +86,7 @@ dependencies {
 
     // Naver map sdk
     implementation 'com.naver.maps:map-sdk:3.14.0'
+
+    // SwipeRefreshLayout
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }
