@@ -1,5 +1,6 @@
 # ⛅ Weather Test App - 인앱 업데이트 테스트 앱
-![ic_launcher](https://user-images.githubusercontent.com/79048895/168544444-d30c11ee-bd44-40ac-9eb9-5c75c0569228.png)
+![ic_launcher](https://user-images.githubusercontent.com/79048895/168544444-d30c11ee-bd44-40ac-9eb9-5c75c0569228.png)  
+[🎮 Play 스토어](https://play.google.com/store/apps/details?id=org.sjhstudio.weathertestapp)   
 <br>
 <br>
 ## 📷 스크린샷
