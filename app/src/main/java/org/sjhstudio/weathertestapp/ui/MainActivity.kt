@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.location.Location
@@ -11,11 +12,13 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -46,10 +49,8 @@ class MainActivity: BaseActivity() {
     private val locationListener: MyLocationListener by lazy { MyLocationListener() }
     private val weatherAdapter: WeatherAdapter by lazy { WeatherAdapter() }
 
-    @Inject
-    lateinit var locationManager: LocationManager
-    @Inject
-    lateinit var appUpdateManager: AppUpdateManager
+    @Inject lateinit var locationManager: LocationManager
+    @Inject lateinit var appUpdateManager: AppUpdateManager
 
     private var networkDialog: AlertDialog? = null
     private var isReady = false
@@ -65,8 +66,16 @@ class MainActivity: BaseActivity() {
         InAppUpdateHelper.setOnInAppUpdateCallback(null)
     }
 
+    fun statusBarHeight(context: Context): Int {
+        val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+
+        return if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId)
+        else 0
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.container.setPadding(0, statusBarHeight(this), 0, 0)
         InAppUpdateHelper.apply {
             setOnInAppUpdateCallback(object: OnInAppUpdateCallback {
                 override fun onFailed() {
@@ -95,15 +104,23 @@ class MainActivity: BaseActivity() {
     }
 
     private fun initUi() {
-        setSwipeRefreshLayout()
-        binding.dateTv.isSelected = true
-        binding.addressTv.isSelected = true
-        binding.searchBtn.setOnClickListener {  // 지역검색
-            searchAreaResult.launch(Intent(this, SearchActivity::class.java))
-        }
-        binding.weatherRv.apply {
-            adapter = weatherAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+        with(binding) {
+            setSwipeRefreshLayout()
+            setSupportActionBar(toolbar)
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                setDisplayShowTitleEnabled(false)
+                setHomeAsUpIndicator(R.drawable.ic_menu)
+            }
+            dateTv.isSelected = true
+            addressTv.isSelected = true
+            searchBtn.setOnClickListener {  // 지역검색
+                searchAreaResult.launch(Intent(this@MainActivity, SearchActivity::class.java))
+            }
+            weatherRv.apply {
+                adapter = weatherAdapter
+                layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            }
         }
     }
 
@@ -309,6 +326,16 @@ class MainActivity: BaseActivity() {
             super.onProviderDisabled(provider)
         }
 
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            android.R.id.home -> binding.drawerLayout.openDrawer(GravityCompat.START)
+
+        }
+
+        return false
     }
 
 }

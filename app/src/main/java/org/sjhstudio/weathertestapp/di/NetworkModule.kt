@@ -12,6 +12,7 @@ import org.sjhstudio.weathertestapp.util.Constants.NAVER_MAP_API_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
