@@ -4,7 +4,6 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.location.Location
@@ -27,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.sjhstudio.weathertestapp.R
 import org.sjhstudio.weathertestapp.ui.adapter.WeatherAdapter
 import org.sjhstudio.weathertestapp.databinding.ActivityMainBinding
+import org.sjhstudio.weathertestapp.databinding.NavHeaderMainBinding
 import org.sjhstudio.weathertestapp.model.Addresses
 import org.sjhstudio.weathertestapp.util.*
 import org.sjhstudio.weathertestapp.util.Constants.DEBUG
@@ -66,16 +66,9 @@ class MainActivity: BaseActivity() {
         InAppUpdateHelper.setOnInAppUpdateCallback(null)
     }
 
-    fun statusBarHeight(context: Context): Int {
-        val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-
-        return if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId)
-        else 0
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.fitSystemWindows = true
         super.onCreate(savedInstanceState)
-        binding.container.setPadding(0, statusBarHeight(this), 0, 0)
         InAppUpdateHelper.apply {
             setOnInAppUpdateCallback(object: OnInAppUpdateCallback {
                 override fun onFailed() {
@@ -103,15 +96,18 @@ class MainActivity: BaseActivity() {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initUi() {
+        setSwipeRefreshLayout()
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
+            setHomeAsUpIndicator(R.drawable.ic_menu)
+        }
+
         with(binding) {
-            setSwipeRefreshLayout()
-            setSupportActionBar(toolbar)
-            supportActionBar?.apply {
-                setDisplayHomeAsUpEnabled(true)
-                setDisplayShowTitleEnabled(false)
-                setHomeAsUpIndicator(R.drawable.ic_menu)
-            }
+            container.setPadding(0, Utils.getStatusBarHeight(this@MainActivity), 0, 0)
             dateTv.isSelected = true
             addressTv.isSelected = true
             searchBtn.setOnClickListener {  // 지역검색
@@ -122,6 +118,9 @@ class MainActivity: BaseActivity() {
                 layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
             }
         }
+
+        val navHeaderBinding = NavHeaderMainBinding.bind(binding.navigation.getHeaderView(0))
+        navHeaderBinding.appVersionTv.text = "Ver ${packageManager.getPackageInfo(packageName, 0).versionName}"
     }
 
     private fun observeAddress() {

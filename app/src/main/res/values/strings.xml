@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">WeatherTestApp</string>
 
     <string name="naver_map_client_id">vekbsqse4r</string>
@@ -18,5 +17,5 @@
     <string name="search_area_where_the_weather_is_curious">날씨가 궁금한 지역을 검색해보세요!</string>
     <string name="select_area_and_then_confirm_weather">검색한 지역을 선택하시면 날씨를 확인하실 수 있습니다.</string>
     <string name="success_weather_loading">날씨 불러오기 성공!</string>
-
+    <string name="made_by_seo">made by 서주냥</string>
 </resources>

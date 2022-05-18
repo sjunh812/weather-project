@@ -29,27 +29,29 @@ class SearchActivity: BaseActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.searchBtn.setOnClickListener {
-            val input = binding.searchEt.text.toString()
+        with(binding) {
+            searchBtn.setOnClickListener {
+                val input = searchEt.text.toString()
 
-            if(input.trim().isEmpty()) {
-                Snackbar.make(binding.searchRv, "내용을 입력해주세요.", 1000).show()
-            } else {
-                searchVm.getAddressList(input)
+                if(input.trim().isEmpty()) {
+                    Snackbar.make(binding.searchRv, "내용을 입력해주세요.", 1000).show()
+                } else {
+                    searchVm.getAddressList(input)
+                }
             }
-        }
-        binding.searchRv.apply {
-            searchAdapter.apply {
-                setOnSearchAdapterCallback(object: SearchAdapterCallback {
-                    override fun onSelected(item: Addresses) {
-                        val intent = Intent().apply { putExtra(RESULT_SEARCH_AREA, item) }
-                        setResult(RESULT_OK, intent)
-                        finish()
-                    }
-                })
+            searchRv.apply {
+                searchAdapter.apply {
+                    setOnSearchAdapterCallback(object: SearchAdapterCallback {
+                        override fun onSelected(item: Addresses) {
+                            val intent = Intent().apply { putExtra(RESULT_SEARCH_AREA, item) }
+                            setResult(RESULT_OK, intent)
+                            finish()
+                        }
+                    })
+                }
+                adapter = searchAdapter
+                layoutManager = LinearLayoutManager(this@SearchActivity)
             }
-            adapter = searchAdapter
-            layoutManager = LinearLayoutManager(this@SearchActivity)
         }
         observeAddressList()
     }
